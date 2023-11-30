@@ -1,8 +1,8 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-	name: "Next.js + NextUI",
-	description: "Make beautiful websites regardless of your design experience.",
+	name: "Investment Simulation",
+	description: "Welcome to 'Investment Simulation' - Your Virtual Investment Advisor! Our platform offers a realistic stock market environment where you can learn investment strategies and test your financial decisions without any real-world risk. ",
 	navItems: [
 		{
 			label: "Home",
@@ -59,11 +59,4 @@ export const siteConfig = {
 			href: "/logout",
 		},
 	],
-	links: {
-		github: "https://github.com/nextui-org/nextui",
-		twitter: "https://twitter.com/getnextui",
-		docs: "https://nextui.org",
-		discord: "https://discord.gg/9b6yyZKmH4",
-    sponsor: "https://patreon.com/jrgarciadev"
-	},
 };
