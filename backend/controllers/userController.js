@@ -19,6 +19,7 @@ exports.signUp = async (req, res) => {
   try {
     const { username, email, password } = req.body;
     const existingUser = await userModel.findUserByEmail(email);
+    console.log("123",existingUser)
     if (existingUser) {
       return res.status(409).send({ message: "Email is already in use." });
     }
@@ -37,7 +38,7 @@ exports.signUp = async (req, res) => {
       SECRET_KEY,
       { expiresIn: "1h" }
     );
-
+    console.log(SECRET_KEY)
     const responseData = {
       data: {
         access_token: token,
@@ -47,7 +48,7 @@ exports.signUp = async (req, res) => {
           provider: "native",
           username: newUser.username,
           email: newUser.email,
-          picture: newUser.picture || "", // Assuming newUser might have a 'picture' property. If not, provide a default or remove this.
+          picture: newUser.picture || "", 
         },
       },
     };

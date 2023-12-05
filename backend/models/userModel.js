@@ -7,9 +7,12 @@ exports.createUser = async (username, email, password) => {
       throw new Error("Password is required for hashing.");
     }
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-    const query = "INSERT INTO Users (username, email, password) VALUES (?, ?, ?)";
+    console.log(hashedPassword);
+    const query =
+      "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
     const results = await pool.query(query, [username, email, hashedPassword]);
-    const newUser = { id: results.insertId, username: username, email: email }; 
+    const newUser = { id: results.insertId, username: username, email: email };
+    console.log("123123",newUser);
     return newUser;
   } catch (error) {
     console.error("Error occurred in createUser:", error);
@@ -17,24 +20,17 @@ exports.createUser = async (username, email, password) => {
   }
 };
 
-exports.findUserByEmail = (email) => {
-  return new Promise((resolve, reject) => {
-    const query = "SELECT * FROM Users WHERE email = ?";
-    pool.query(query, [email], (error, results) => {
-      if (error) {
-        console.error("Error occurred in findUserByEmail:", error.message);
-        reject(error);
-      } else {
-        if (results && results.length > 0) {
-          resolve(results[0]);
-        } else {
-          console.log(results);
-          resolve(null);
-        }
-      }
-    });
-  });
+exports.findUserByEmail = async (email) => {
+  try {
+    const query = "SELECT * FROM users WHERE email = ?";
+    const [results] = await pool.query(query, [email]);
+    return results[0];
+  } catch (error) {
+    console.error("Error in findUserByEmail:", error);
+    throw error;
+  }
 };
+
 
 exports.verifyPassword = async (inputPassword, hashedPassword) => {
   try {
