@@ -27,6 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
+      <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"></meta>
       <body
         className={clsx(
           "min-h-screen bg-background font-sans antialiased",
