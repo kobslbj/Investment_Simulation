@@ -1,12 +1,14 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
+import { useRouter } from 'next/navigation';
+// import Cookies from 'js-cookie';
 import {
   Navbar,
   NavbarBrand,
   NavbarContent,
   NavbarItem,
-  Link,
   DropdownItem,
   DropdownTrigger,
   Dropdown,
@@ -14,7 +16,12 @@ import {
   Avatar,
 } from "@nextui-org/react";
 
-export default function navbar() {
+export default function Navbar1() {
+  const router = useRouter();
+  const handleLogout = () => {
+    // Cookies.remove('token');
+    router.push('/signin'); 
+  };
   return (
     <Navbar isBordered>
       <NavbarBrand>
@@ -63,9 +70,9 @@ export default function navbar() {
           </DropdownTrigger>
           <DropdownMenu aria-label="Profile Actions" variant="flat">
             <DropdownItem key="myaccount">帳戶概覽</DropdownItem>
-            <DropdownItem key="logout" color="danger">
-              登出
-            </DropdownItem>
+              <DropdownItem key="logout" color="danger" onClick={handleLogout}>
+                登出
+              </DropdownItem>
           </DropdownMenu>
         </Dropdown>
       </NavbarContent>
