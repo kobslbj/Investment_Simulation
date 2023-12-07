@@ -16,7 +16,7 @@ const useSignUp = () => {
   const signUp = async ({ username, email, password, setIsSignUppage }: SignUpProps) => {
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/signup`,
+        `${process.env.NEXT_PUBLIC_API_URL}/user/signup`,
         { name: username, email, password }
       );
 

@@ -12,7 +12,7 @@ const useLogIn = () => {
   const [error, setError] = useState<string | null>(null);
   const logIn = async ({ username, password }: LogInProps) => {
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/users/signin`, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/signin`, {
         provider: "native",
         username,
         password,
