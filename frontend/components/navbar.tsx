@@ -3,7 +3,8 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
-// import Cookies from 'js-cookie';
+import Cookies from 'js-cookie';
+import useGetProfile from '../hooks/user/useGetProfile';
 import {
   Navbar,
   NavbarBrand,
@@ -18,8 +19,10 @@ import {
 
 export default function Navbar1() {
   const router = useRouter();
+  const { userProfile, isLoading, isError } = useGetProfile();
   const handleLogout = () => {
-    // Cookies.remove('token');
+    Cookies.remove('userId');
+    Cookies.remove('accessToken');
     router.push('/signin'); 
   };
   return (
@@ -76,6 +79,7 @@ export default function Navbar1() {
           </DropdownMenu>
         </Dropdown>
       </NavbarContent>
+      <p>安安 {userProfile?.username}</p>
     </Navbar>
   );
 }
