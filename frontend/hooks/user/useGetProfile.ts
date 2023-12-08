@@ -36,7 +36,7 @@ export default function useGetProfile() {
     }
   };
 
-  const { data, error, mutate, isValidating } = useSWR('/1.0/user/profile', fetcher);
+  const { data, error, mutate, isValidating } = useSWR(`${process.env.NEXT_PUBLIC_API_URL}/user/profile`, fetcher);
 
   return {
     userProfile: data?.data,
