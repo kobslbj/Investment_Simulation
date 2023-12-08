@@ -17,10 +17,10 @@ const useSignUp = () => {
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/user/signup`,
-        { name: username, email, password }
+        { username: username, email, password }
       );
 
-      if (response.status === 200) {
+      if (response.status === 201) {
         setIsSignUppage(false);
         Swal.fire({
           title: "註冊成功",
