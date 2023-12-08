@@ -38,7 +38,7 @@ export default function SignInUppage() {
   };
 
   const handleLogIn = async () => {
-    await logIn({ username, password });
+    await logIn({ email, password });
   };
   return (
     <div>
