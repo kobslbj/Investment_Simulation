@@ -4,17 +4,17 @@ import { useState } from "react";
 import Swal from "sweetalert2";
 
 interface LogInProps {
-  username: string;
+  email: string;
   password: string;
 }
 
 const useLogIn = () => {
   const [error, setError] = useState<string | null>(null);
-  const logIn = async ({ username, password }: LogInProps) => {
+  const logIn = async ({ email, password }: LogInProps) => {
     try {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/signin`, {
         provider: "native",
-        username,
+        email,
         password,
       });
 
