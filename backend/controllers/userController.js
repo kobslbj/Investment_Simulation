@@ -19,7 +19,7 @@ exports.signUp = async (req, res) => {
   try {
     const { username, email, password } = req.body;
     const existingUser = await userModel.findUserByEmail(email);
-    console.log("123",existingUser)
+    console.log("123", existingUser);
     if (existingUser) {
       return res.status(409).send({ message: "Email is already in use." });
     }
@@ -38,7 +38,7 @@ exports.signUp = async (req, res) => {
       SECRET_KEY,
       { expiresIn: "1h" }
     );
-    console.log(SECRET_KEY)
+    console.log(SECRET_KEY);
     const responseData = {
       data: {
         access_token: token,
@@ -48,7 +48,7 @@ exports.signUp = async (req, res) => {
           provider: "native",
           username: newUser.username,
           email: newUser.email,
-          picture: newUser.picture || "", 
+          picture: newUser.picture || "",
         },
       },
     };
@@ -134,29 +134,10 @@ exports.getUserProfile = async (req, res) => {
         data: {
           provider: user.provider,
           username: user.username,
-          email: user.email,
-          picture: user.picture || "",
+          // email: user.email,
+          // picture: user.picture || "",
         },
       });
-    } else if (provider === "facebook") {
-      fb.setAccessToken(token);
-      fb.api(
-        "/me",
-        { fields: ["id", "username", "email", "picture"] },
-        function (err, fbData) {
-          if (err)
-            return res.status(403).send({ error: "Invalid Facebook token." });
-
-          return res.status(200).json({
-            data: {
-              provider: "facebook",
-              username: fbData.username,
-              email: fbData.email,
-              picture: fbData.picture.data.url,
-            },
-          });
-        }
-      );
     } else {
       return res.status(403).json({ error: "Invalid provider." });
     }
