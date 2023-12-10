@@ -1,5 +1,5 @@
 CREATE TABLE `users` (
-  `id` int PRIMARY KEY,
+  `id` int PRIMARY KEY AUTO_INCREMENT,
   `username` varchar(255),
   `email` varchar(255),
   `password` varchar(255),
@@ -7,7 +7,7 @@ CREATE TABLE `users` (
 );
 
 CREATE TABLE `orders` (
-  `id` int PRIMARY KEY,
+  `id` int PRIMARY KEY AUTO_INCREMENT,
   `user_id` int,
   `stock_id` int,
   `order_type` varchar(255),
@@ -18,7 +18,7 @@ CREATE TABLE `orders` (
 );
 
 CREATE TABLE `transactions` (
-  `id` int PRIMARY KEY,
+  `id` int PRIMARY KEY AUTO_INCREMENT,
   `order_id` int,
   `transaction_price` decimal,
   `transaction_quantity` int,
@@ -26,7 +26,7 @@ CREATE TABLE `transactions` (
 );
 
 CREATE TABLE `stock_holdings` (
-  `id` int PRIMARY KEY,
+  `id` int PRIMARY KEY AUTO_INCREMENT,
   `user_id` int,
   `stock_id` int,
   `quantity` int,
@@ -34,7 +34,7 @@ CREATE TABLE `stock_holdings` (
 );
 
 CREATE TABLE `stocks` (
-  `id` int PRIMARY KEY,
+  `id` int PRIMARY KEY AUTO_INCREMENT,
   `stock_symbol` varchar(255),
   `stock_name` varchar(255),
   `current_price` decimal
