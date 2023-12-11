@@ -23,6 +23,10 @@ async function matchOrders() {
   }
 }
 
+async function updateStockPrice(stockId, newPrice) {
+    const updatePriceQuery = "UPDATE stocks SET current_price = ? WHERE id = ?";
+    await pool.query(updatePriceQuery, [newPrice, stockId]);
+}
 async function matchLimitOrder(order) {
   try {
     // 假設買單是尋找價格小於等於限價的賣單，賣單則相反
@@ -50,6 +54,7 @@ async function matchLimitOrder(order) {
   
         // 更新撮合訂單的狀態和數量
         await updateOrderStatusAndQuantity(order.id, matchingOrder.id, matchedQuantity);
+        await updateStockPrice(order.stock_id, matchingOrder.order_price);
       }
     } catch (error) {
       console.error("Error occurred in matchLimitOrder:", error.message);
@@ -81,6 +86,7 @@ async function matchMarketOrder(order) {
   
         // 更新撮合訂單的狀態和數量
         await updateOrderStatusAndQuantity(order.id, matchingOrder.id, matchedQuantity);
+        await updateStockPrice(order.stock_id, matchingOrder.order_price);
       }
     } catch (error) {
       console.error("Error occurred in matchMarketOrder:", error.message);
