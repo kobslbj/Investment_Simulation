@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
+import { parseCookies } from 'nookies';
 import {
   Card,
   CardHeader,
@@ -15,7 +16,25 @@ import {
   Button,
   Input,
 } from "@nextui-org/react";
-export default function Orderplacer() {
+import useTrade from "../hooks/trade/useTrade";
+
+export default function Orderplacer({ selectedStock, setSelectedStock, currentPrice }) {
+  const cookies = parseCookies();
+  const userId = cookies.userId;
+  const { executeTrade } = useTrade();
+  const [quantity, setQuantity] = useState(0);
+  const [orderPrice, setOrderPrice] = useState(0);
+  const priceTypeRef = useRef("limit"); // 使用 useRef 來保持價格類型的狀態
+  const handleStockSelection = (newSelectedStock) => {
+    setSelectedStock(newSelectedStock);
+  };
+
+  const handleTrade = async (orderType) => {
+    const stockId = stockNameToId[selectedValue];
+    const finalOrderPrice = priceTypeRef.current === "market" ? currentPrice : orderPrice;
+    await executeTrade(userId, stockId, orderType, priceTypeRef.current, quantity, finalOrderPrice);
+  };
+  
   const [selectedKeys, setSelectedKeys] = useState(new Set(["選擇股票"]));
   const [selectedKey1, setSelectedKey1] = useState(new Set(["整股ROD"]));
   const [selectedKey2, setSelectedKey2] = useState(new Set(["限價"]));
@@ -52,11 +71,17 @@ export default function Orderplacer() {
               disallowEmptySelection
               selectionMode="single"
               selectedKeys={selectedKeys}
-              onSelectionChange={setSelectedKeys}
+              onSelectionChange={(keys) => {
+                setSelectedKeys(keys);
+                const newSelectedStock = Array.from(keys)[0];
+                if (newSelectedStock) {
+                  handleStockSelection(newSelectedStock);
+                }
+              }}
             >
               <DropdownItem key="2303聯電">2303 聯電</DropdownItem>
               <DropdownItem key="2618長榮航">2618 長榮航</DropdownItem>
-              <DropdownItem key="2388緯創">2388 緯創</DropdownItem>
+              <DropdownItem key="3231緯創">3231 緯創</DropdownItem>
               <DropdownItem key="2892第一金">2892 第一金</DropdownItem>
               <DropdownItem key="2330台積電">2330 台積電</DropdownItem>
             </DropdownMenu>
@@ -130,6 +155,8 @@ export default function Orderplacer() {
               placeholder="0.00"
               variant="faded"
               size="sm"
+              value={orderPrice}
+              onChange={(e) => setOrderPrice(e.target.value)}
               startContent={
                 <div className="pointer-events-none flex items-center">
                   <span className="text-default-400 text-small">$</span>
@@ -139,15 +166,31 @@ export default function Orderplacer() {
           </div>
           <div className="flex flex-col">
             <p className="ml-1.5 mb-2">數量(張):</p>
-            <Input type="number" label="" placeholder="0" variant="faded" size="sm"/>
+            <Input
+              type="number"
+              label=""
+              placeholder="0"
+              variant="faded"
+              size="sm"
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+            />
           </div>
         </div>
       </CardBody>
       <CardFooter className="flex justify-center gap-5">
-        <Button color="success" className="font-bold text-md">
+        <Button
+          color="success"
+          className="font-bold text-md"
+          onClick={() => handleTrade("buy")}
+        >
           買進
         </Button>
-        <Button color="danger" className="font-bold text-md">
+        <Button
+          color="danger"
+          className="font-bold text-md"
+          onClick={() => handleTrade("sell")}
+        >
           賣出
         </Button>
       </CardFooter>

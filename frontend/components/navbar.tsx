@@ -33,11 +33,6 @@ export default function Navbar1() {
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
         <NavbarItem>
           <Link color="foreground" href="#">
-            盤中零股
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link color="foreground" href="#">
             委託查詢
           </Link>
         </NavbarItem>
