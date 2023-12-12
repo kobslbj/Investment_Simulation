@@ -1,4 +1,5 @@
 const pool = require("../db");
+const { getIo } = require('../socket');
 
 async function matchOrders() {
   try {
@@ -22,29 +23,41 @@ async function matchOrders() {
     throw error;
   }
 }
-
 async function updateStockPrice(stockId, newPrice) {
   const updatePriceQuery = "UPDATE stocks SET current_price = ? WHERE id = ?";
   await pool.query(updatePriceQuery, [newPrice, stockId]);
+  const updatedStock = { id: stockId, current_price: newPrice };
+  onStockPriceUpdate(updatedStock); 
 }
+
+function onStockPriceUpdate(stock) {
+  const io = getIo();
+  if (io) {
+    io.emit('stockPriceUpdate', stock);
+  }
+}
+
+
+
 async function matchLimitOrder(order) {
   try {
     // 假設買單是尋找價格小於等於限價的賣單，賣單則相反
     const oppositeType = order.order_type === "buy" ? "sell" : "buy";
     const orderPriceCondition = order.order_type === "buy" ? "<=" : ">=";
     const matchQuery = `
-      SELECT * FROM orders 
-      WHERE stock_id = ? AND order_type = ? AND price_type = 'limit' AND status = 'pending' 
-      AND order_price ${orderPriceCondition} ?
-      ORDER BY order_price ${
-        order.order_type === "buy" ? "ASC" : "DESC"
-      }, order_date ASC
-      LIMIT 1`;
+    SELECT * FROM orders 
+    WHERE stock_id = ? AND order_type = ? AND price_type = 'limit' AND status = 'pending' 
+    AND order_price ${orderPriceCondition} ? AND user_id != ?
+    ORDER BY order_price ${
+      order.order_type === "buy" ? "ASC" : "DESC"
+    }, order_date ASC
+    LIMIT 1`;
 
     const [matchingOrders] = await pool.query(matchQuery, [
       order.stock_id,
       oppositeType,
       order.order_price,
+      order.user_id,
     ]);
 
     if (matchingOrders.length > 0) {
@@ -102,25 +115,24 @@ async function matchMarketOrder(order) {
   }
 }
 async function updateOrderStatusAndQuantity(
-    orderId,
-    matchingOrderId,
-    matchedQuantity
-  ) {
-    const updateQuantityQuery = `
+  orderId,
+  matchingOrderId,
+  matchedQuantity
+) {
+  const updateQuantityQuery = `
       UPDATE orders 
       SET remaining_quantity = GREATEST(0, remaining_quantity - ?)
       WHERE id = ?`;
-    await pool.query(updateQuantityQuery, [matchedQuantity, orderId]);
-    await pool.query(updateQuantityQuery, [matchedQuantity, matchingOrderId]);
-  
-    const updateStatusQuery = `
+  await pool.query(updateQuantityQuery, [matchedQuantity, orderId]);
+  await pool.query(updateQuantityQuery, [matchedQuantity, matchingOrderId]);
+
+  const updateStatusQuery = `
       UPDATE orders 
       SET status = CASE WHEN remaining_quantity = 0 THEN 'filled' ELSE 'partial' END 
       WHERE id = ?`;
-    await pool.query(updateStatusQuery, [orderId]);
-    await pool.query(updateStatusQuery, [matchingOrderId]);
-  }
-  
+  await pool.query(updateStatusQuery, [orderId]);
+  await pool.query(updateStatusQuery, [matchingOrderId]);
+}
 
 module.exports = {
   matchOrders,

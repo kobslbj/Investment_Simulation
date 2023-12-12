@@ -14,7 +14,7 @@ function scheduleRobotTrades() {
         } catch (error) {
             console.error("Error in scheduleRobotTrades:", error.message);
         }
-    }, 500); 
+    }, 1000); 
 }
 
 module.exports = {
