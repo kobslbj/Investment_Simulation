@@ -1,18 +1,20 @@
-const robotModel = require('../models/robotModel');
-const robotLogic = require('./robotLogic'); 
+const { generateTradeForRobot } = require('./robotLogic');
+const { executeTrade } = require('../models/orderModel');
+
+
 
 function scheduleRobotTrades() {
     setInterval(async () => {
-        // 假設 generateTrade 為機器人產生交易數據的函數
-        const trade1 = await robotLogic.generateTradeForRobot(1); // 為機器人1產生交易數據
-        const trade2 = await robotLogic.generateTradeForRobot(2); // 為機器人2產生交易數據
+        try {
+            const trade1 = await generateTradeForRobot(1);
+            await executeTrade(1, trade1.stockId, trade1.orderType, trade1.priceType, trade1.quantity, trade1.price);
 
-        // 為機器人1下單
-        robotModel.placeRobotOrder(1, trade1.stockId, trade1.orderType, trade1.priceType, trade1.quantity, trade1.price);
-
-        // 為機器人2下單
-        robotModel.placeRobotOrder(2, trade2.stockId, trade2.orderType, trade2.priceType, trade2.quantity, trade2.price);
-    }, 5000); // 每5秒執行一次
+            const trade2 = await generateTradeForRobot(2); 
+            await executeTrade(2, trade2.stockId, trade2.orderType, trade2.priceType, trade2.quantity, trade2.price);
+        } catch (error) {
+            console.error("Error in scheduleRobotTrades:", error.message);
+        }
+    }, 500); 
 }
 
 module.exports = {

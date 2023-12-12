@@ -24,8 +24,8 @@ async function matchOrders() {
 }
 
 async function updateStockPrice(stockId, newPrice) {
-    const updatePriceQuery = "UPDATE stocks SET current_price = ? WHERE id = ?";
-    await pool.query(updatePriceQuery, [newPrice, stockId]);
+  const updatePriceQuery = "UPDATE stocks SET current_price = ? WHERE id = ?";
+  await pool.query(updatePriceQuery, [newPrice, stockId]);
 }
 async function matchLimitOrder(order) {
   try {
@@ -48,19 +48,23 @@ async function matchLimitOrder(order) {
     ]);
 
     if (matchingOrders.length > 0) {
-        const matchingOrder = matchingOrders[0];
-        // 計算撮合數量
-        const matchedQuantity = Math.min(order.quantity, matchingOrder.quantity);
-  
-        // 更新撮合訂單的狀態和數量
-        await updateOrderStatusAndQuantity(order.id, matchingOrder.id, matchedQuantity);
-        await updateStockPrice(order.stock_id, matchingOrder.order_price);
-      }
-    } catch (error) {
-      console.error("Error occurred in matchLimitOrder:", error.message);
-      throw error;
+      const matchingOrder = matchingOrders[0];
+      // 計算撮合數量
+      const matchedQuantity = Math.min(order.quantity, matchingOrder.quantity);
+
+      // 更新撮合訂單的狀態和數量
+      await updateOrderStatusAndQuantity(
+        order.id,
+        matchingOrder.id,
+        matchedQuantity
+      );
+      await updateStockPrice(order.stock_id, matchingOrder.order_price);
     }
+  } catch (error) {
+    console.error("Error occurred in matchLimitOrder:", error.message);
+    throw error;
   }
+}
 
 async function matchMarketOrder(order) {
   try {
@@ -80,24 +84,44 @@ async function matchMarketOrder(order) {
     ]);
 
     if (matchingOrders.length > 0) {
-        const matchingOrder = matchingOrders[0];
-        // 計算撮合數量
-        const matchedQuantity = Math.min(order.quantity, matchingOrder.quantity);
-  
-        // 更新撮合訂單的狀態和數量
-        await updateOrderStatusAndQuantity(order.id, matchingOrder.id, matchedQuantity);
-        await updateStockPrice(order.stock_id, matchingOrder.order_price);
-      }
-    } catch (error) {
-      console.error("Error occurred in matchMarketOrder:", error.message);
-      throw error;
+      const matchingOrder = matchingOrders[0];
+      // 計算撮合數量
+      const matchedQuantity = Math.min(order.quantity, matchingOrder.quantity);
+
+      // 更新撮合訂單的狀態和數量
+      await updateOrderStatusAndQuantity(
+        order.id,
+        matchingOrder.id,
+        matchedQuantity
+      );
+      await updateStockPrice(order.stock_id, matchingOrder.order_price);
     }
+  } catch (error) {
+    console.error("Error occurred in matchMarketOrder:", error.message);
+    throw error;
   }
-  async function updateOrderStatusAndQuantity(orderId, matchingOrderId, matchedQuantity) {
-    const updateOrderQuery = "UPDATE orders SET quantity = quantity - ?, status = CASE WHEN quantity > 0 THEN 'partial' ELSE 'filled' END WHERE id = ?";
-    await pool.query(updateOrderQuery, [matchedQuantity, orderId]);
-    await pool.query(updateOrderQuery, [matchedQuantity, matchingOrderId]);
+}
+async function updateOrderStatusAndQuantity(
+    orderId,
+    matchingOrderId,
+    matchedQuantity
+  ) {
+    const updateQuantityQuery = `
+      UPDATE orders 
+      SET remaining_quantity = GREATEST(0, remaining_quantity - ?)
+      WHERE id = ?`;
+    await pool.query(updateQuantityQuery, [matchedQuantity, orderId]);
+    await pool.query(updateQuantityQuery, [matchedQuantity, matchingOrderId]);
+  
+    const updateStatusQuery = `
+      UPDATE orders 
+      SET status = CASE WHEN remaining_quantity = 0 THEN 'filled' ELSE 'partial' END 
+      WHERE id = ?`;
+    await pool.query(updateStatusQuery, [orderId]);
+    await pool.query(updateStatusQuery, [matchingOrderId]);
   }
+  
+
 module.exports = {
   matchOrders,
 };
