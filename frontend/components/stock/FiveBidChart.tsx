@@ -21,6 +21,10 @@ ChartJS.register(
   Legend
 );
 
+interface FiveBidChartProps {
+  bids: { order_price: number; quantity: number }[];
+}
+
 export const options = {
     indexAxis: 'y',
     elements: {
@@ -51,30 +55,43 @@ export const options = {
   };
   
 
-const BIDData = [
-  { price: 100, quantity: 500 },
-  { price: 99, quantity: 300 },
-  { price: 98, quantity: 200 },
-  { price: 97, quantity: 100 },
-  { price: 96, quantity: 50 },
-];
+// const BIDData = [
+//   { price: 100, quantity: 500 },
+//   { price: 99, quantity: 300 },
+//   { price: 98, quantity: 200 },
+//   { price: 97, quantity: 100 },
+//   { price: 96, quantity: 50 },
+// ];
 
-export const bidData = {
-  labels: BIDData.map((bid) => `$${bid.price}`),
-  datasets: [
-    {
-      label: "Quantity",
-      data: BIDData.map((bid) => bid.quantity),
-      borderColor: "rgb(255, 99, 132)",
-      backgroundColor: "rgba(255, 99, 132, 0.5)",
-    },
-  ],
-};
+// export const bidData = {
+//   labels: BIDData.map((bid) => `$${bid.price}`),
+//   datasets: [
+//     {
+//       label: "Quantity",
+//       data: BIDData.map((bid) => bid.quantity),
+//       borderColor: "rgb(255, 99, 132)",
+//       backgroundColor: "rgba(255, 99, 132, 0.5)",
+//     },
+//   ],
+// };
 
-export default function FiveBidChart() {
+const FiveBidChart: React.FC<FiveBidChartProps> = ({ bids }) => {
+  const data = {
+    labels: bids.map((bid) => `$${bid.order_price}`),
+    datasets: [
+      {
+        label: "Quantity",
+        data: bids.map((bid) => bid.quantity),
+        borderColor: "rgb(255, 99, 132)",
+        backgroundColor: "rgba(255, 99, 132, 0.5)",
+      },
+    ],
+  };
+
   return (
     <div className="w-[20rem]">
-      <Bar options={options} data={bidData} />
+      <Bar options={options} data={data} />
     </div>
   );
 }
+export default FiveBidChart;

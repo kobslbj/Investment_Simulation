@@ -21,6 +21,10 @@ ChartJS.register(
   Legend
 );
 
+interface FiveAskChartProps {
+  asks: { order_price: number; quantity: number }[];
+}
+
 export const options = {
   indexAxis: "y",
   elements: {
@@ -35,36 +39,29 @@ export const options = {
     },
     title: {
       display: true,
-      text: "Stock Ask ",
+      text: "Stock Ask",
     },
   },
 };
 
-// 假設的五檔委買數據
-const ASKData = [
-  { price: 100, quantity: 500 },
-  { price: 101, quantity: 300 },
-  { price: 102, quantity: 200 },
-  { price: 103, quantity: 100 },
-  { price: 104, quantity: 50 },
-];
+const FiveAskChart: React.FC<FiveAskChartProps> = ({ asks }) => {
+  const data = {
+    labels: asks.map((ask) => `$${ask.order_price}`),
+    datasets: [
+      {
+        label: "Quantity",
+        data: asks.map((ask) => ask.quantity),
+        borderColor: "rgb(75, 192, 192)",
+        backgroundColor: "rgba(75, 192, 192, 0.5)",
+      },
+    ],
+  };
 
-export const askData = {
-  labels: ASKData.map((ask) => `$${ask.price}`),
-  datasets: [
-    {
-      label: "Quantity",
-      data: ASKData.map((ask) => ask.quantity),
-      borderColor: "rgb(75, 192, 192)",
-      backgroundColor: "rgba(75, 192, 192, 0.5)",
-    },
-  ],
-};
-
-export default function FiveAskChart() {
   return (
     <div className="w-[20rem]">
-      <Bar options={options} data={askData} />
+      <Bar options={options} data={data} />
     </div>
   );
-}
+};
+
+export default FiveAskChart;
