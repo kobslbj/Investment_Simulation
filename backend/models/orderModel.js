@@ -1,5 +1,7 @@
 const pool = require("../db");
 const matchEmitter = require("../services/eventEmitter");
+const { getIo } = require("../socket");
+const { getFiveLevelOrderBook } = require("../services/orderBookService");
 
 async function getUserById(userId) {
   const query = "SELECT * FROM users WHERE id = ?";
@@ -95,7 +97,9 @@ async function executeTrade(
       quantity,
       orderPrice,
     });
-
+    const orderBookData = await getFiveLevelOrderBook(stockId);
+    const io = getIo();
+    io.emit("orderBookUpdate", { stockId, ...orderBookData });
     await pool.query("COMMIT");
 
     return orderResult.insertId;
