@@ -17,6 +17,8 @@ import {
   Input,
 } from "@nextui-org/react";
 import useTrade from "../hooks/trade/useTrade";
+import { stockNameToId } from '../stockUtils'; 
+
 
 export default function Orderplacer({ selectedStock, setSelectedStock, currentPrice }) {
   const cookies = parseCookies();
@@ -30,7 +32,12 @@ export default function Orderplacer({ selectedStock, setSelectedStock, currentPr
   };
 
   const handleTrade = async (orderType) => {
+    console.log("Selected Value:", selectedValue); 
     const stockId = stockNameToId[selectedValue];
+    if (!stockId) {
+      console.error("Invalid stock name:", selectedValue);
+      return;
+    }
     const finalOrderPrice = priceTypeRef.current === "market" ? currentPrice : orderPrice;
     await executeTrade(userId, stockId, orderType, priceTypeRef.current, quantity, finalOrderPrice);
   };

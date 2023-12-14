@@ -1,22 +1,21 @@
-/* eslint-disable no-shadow */
 import { parseCookies } from "nookies";
 import { useState } from "react";
 import axios from "axios";
-import useSWR, { useSWRConfig, SWRResponse } from "swr";
+import useSWR, { useSWRConfig } from "swr";
 
 interface Options {
   // Define the structure of the options object, if necessary
 }
 
-export default function useCustomHook(url: string, options?: Options): { data: any; error: any; isLoading: boolean } {
+export default function useCustomHook<T>(url: string, options?: Options): { data: T | null; error: any; isLoading: boolean } {
   const cookies = parseCookies();
   const { accessToken } = cookies;
   const { mutate } = useSWRConfig();
   const [isSent, setIsSent] = useState(false);
 
-  const { data, error, isLoading } = useSWR(
+  const { data, error } = useSWR<T>(
     url,
-    async (fetchUrl: string): Promise<any> => {
+    async (fetchUrl: string): Promise<T> => {
       try {
         const res = await axios.get(fetchUrl, {
           headers: { authorization: `Bearer ${accessToken}` },
@@ -56,9 +55,11 @@ export default function useCustomHook(url: string, options?: Options): { data: a
     }
   );
 
+  const isLoading = !data && !error;
+
   if (error) {
     console.log(error);
   }
 
-  return { data: data?.data, error, isLoading };
+  return { data: data ?? null, error, isLoading }; // 使用 `??` 運算符來處理 undefined 的情況
 }

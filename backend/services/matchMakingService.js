@@ -1,5 +1,5 @@
 const pool = require("../db");
-const { getIo } = require('../socket');
+const { getIo } = require("../socket");
 
 async function matchOrders() {
   try {
@@ -27,17 +27,15 @@ async function updateStockPrice(stockId, newPrice) {
   const updatePriceQuery = "UPDATE stocks SET current_price = ? WHERE id = ?";
   await pool.query(updatePriceQuery, [newPrice, stockId]);
   const updatedStock = { id: stockId, current_price: newPrice };
-  onStockPriceUpdate(updatedStock); 
+  onStockPriceUpdate(updatedStock);
 }
 
 function onStockPriceUpdate(stock) {
   const io = getIo();
   if (io) {
-    io.emit('stockPriceUpdate', stock);
+    io.emit("stockPriceUpdate", stock);
   }
 }
-
-
 
 async function matchLimitOrder(order) {
   try {
@@ -72,10 +70,32 @@ async function matchLimitOrder(order) {
         matchedQuantity
       );
       await updateStockPrice(order.stock_id, matchingOrder.order_price);
+      await recordTransaction(
+        order.id,
+        matchingOrder.order_price,
+        matchedQuantity,
+        order.stock_id
+      );
     }
   } catch (error) {
     console.error("Error occurred in matchLimitOrder:", error.message);
     throw error;
+  }
+}
+async function recordTransaction(orderId, price, quantity, stockId) {
+  try {
+    const insertTransactionQuery = `
+      INSERT INTO transactions (order_id, transaction_price, transaction_quantity, transaction_date, stock_id)
+      VALUES (?, ?, ?, NOW(), ?)`;
+
+    await pool.query(insertTransactionQuery, [
+      orderId,
+      price,
+      quantity,
+      stockId,
+    ]);
+  } catch (error) {
+    console.error("Error recording transaction:", error);
   }
 }
 
@@ -132,6 +152,8 @@ async function updateOrderStatusAndQuantity(
       WHERE id = ?`;
   await pool.query(updateStatusQuery, [orderId]);
   await pool.query(updateStatusQuery, [matchingOrderId]);
+
+
 }
 
 module.exports = {

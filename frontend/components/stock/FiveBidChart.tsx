@@ -55,25 +55,7 @@ export const options = {
   };
   
 
-// const BIDData = [
-//   { price: 100, quantity: 500 },
-//   { price: 99, quantity: 300 },
-//   { price: 98, quantity: 200 },
-//   { price: 97, quantity: 100 },
-//   { price: 96, quantity: 50 },
-// ];
 
-// export const bidData = {
-//   labels: BIDData.map((bid) => `$${bid.price}`),
-//   datasets: [
-//     {
-//       label: "Quantity",
-//       data: BIDData.map((bid) => bid.quantity),
-//       borderColor: "rgb(255, 99, 132)",
-//       backgroundColor: "rgba(255, 99, 132, 0.5)",
-//     },
-//   ],
-// };
 
 const FiveBidChart: React.FC<FiveBidChartProps> = ({ bids }) => {
   const data = {
@@ -89,7 +71,7 @@ const FiveBidChart: React.FC<FiveBidChartProps> = ({ bids }) => {
   };
 
   return (
-    <div className="w-[20rem]">
+    <div className="w-[25rem]">
       <Bar options={options} data={data} />
     </div>
   );

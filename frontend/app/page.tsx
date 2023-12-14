@@ -2,6 +2,7 @@
 
 import { useState, useEffect, SetStateAction } from "react";
 import io, { Socket } from "socket.io-client";
+import useGetStock from "../hooks/stock/useGetStock";
 let socket: Socket<DefaultEventsMap, DefaultEventsMap>;
 
 import Navbar1 from "@/components/navbar";
@@ -10,15 +11,28 @@ import FiveAskChart from "@/components/stock/FiveAskChart";
 import FiveBidChart from "@/components/stock/FiveBidChart";
 import { stockNameToId } from "../stockUtils";
 import { DefaultEventsMap } from "@socket.io/component-emitter";
+import React from "react";
+import { Chip } from "@nextui-org/react";
 
 export default function Home() {
   const [selectedStock, setSelectedStock] = useState("");
-  const [currentPrice, setCurrentPrice] = useState("");
+  const [currentPrice, setCurrentPrice] = useState<number | null>(null);
+  const stockId = stockNameToId[selectedStock]
+    ? stockNameToId[selectedStock].toString()
+    : "";
+
+  const {
+    stock,
+    error: stockError,
+    isLoading: stockLoading,
+  } = useGetStock(stockId);
+
+  console.log("123123123" + selectedStock);
   const [orderBook, setOrderBook] = useState({
     bids: [],
     asks: [],
     totalBidQuantity: 0,
-    totalAskQuantity: 0
+    totalAskQuantity: 0,
   });
   const updateFiveLevelOrderBook = (
     data: SetStateAction<{ bids: never[]; asks: never[] }>
@@ -48,13 +62,15 @@ export default function Home() {
       socket.off("orderBookUpdate");
     };
   }, [selectedStock]);
-  function calculateTotal(orders: { quantity: number }[]) {
-    return orders.reduce((total, order) => total + order.quantity, 0);
-  }
-  
+  useEffect(() => {
+    if (stock) {
+      console.log(stock);
+      setCurrentPrice(stock.current_price);
+    }
+  }, [selectedStock, stock]);
 
   return (
-    <section className="flex flex-col items-center justify-center gap-4 ">
+    <section className="flex flex-col items-center justify-center gap-10 ">
       <Navbar1 />
       <OrderPlacer
         selectedStock={selectedStock}
@@ -62,22 +78,30 @@ export default function Home() {
         currentPrice={currentPrice}
       />
       <div className="flex flex-row">
-        <div className="text-2xl">{selectedStock}</div>
-        <div className="text-2xl ml-5">
-          即時價格: {currentPrice ? `${currentPrice} 元` : "N/A"}
+        <Chip color="warning" variant="dot" size="lg" >
+          {selectedStock}
+        </Chip>
+        <div className="text-xl ml-5">
+          即時價格: {currentPrice != null ? `${currentPrice} 元` : "N/A"}
         </div>
       </div>
 
       <div className="flex flex-row mt-5">
         <div>
-          <div className="flex justify-center">
-            委買 {orderBook.totalBidQuantity}
+          <div className="flex justify-center text-xl">
+            <div>委買</div>
+            <div className=" text-red-600 font-bold">
+              {orderBook.totalBidQuantity}
+            </div>
           </div>
           <FiveBidChart bids={orderBook.bids} />
         </div>
         <div>
-          <div className="flex justify-center">
-            委賣 {orderBook.totalAskQuantity}
+          <div className="flex justify-center text-xl">
+            <div>委賣</div>
+            <div className=" text-green-600 font-bold">
+              {orderBook.totalAskQuantity}
+            </div>
           </div>
           <FiveAskChart asks={orderBook.asks} />
         </div>

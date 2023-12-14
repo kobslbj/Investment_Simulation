@@ -7,12 +7,13 @@ exports.createUser = async (username, email, password) => {
       throw new Error("Password is required for hashing.");
     }
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-    console.log(hashedPassword);
-    const query =
-      "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
-    const results = await pool.query(query, [username, email, hashedPassword]);
-    const newUser = { id: results.insertId, username: username, email: email };
-    console.log("123123",newUser);
+
+    const query = "INSERT INTO users (username, email, password, balance) VALUES (?, ?, ?, ?)";
+    const initialBalance = 2000000; 
+    const results = await pool.query(query, [username, email, hashedPassword, initialBalance]);
+
+    const newUser = { id: results.insertId, username: username, email: email, balance: initialBalance };
+    console.log("User Created:", newUser);
     return newUser;
   } catch (error) {
     console.error("Error occurred in createUser:", error);
@@ -37,6 +38,17 @@ exports.verifyPassword = async (inputPassword, hashedPassword) => {
     return await bcrypt.compare(inputPassword, hashedPassword);
   } catch (error) {
     console.error("Error occurred in verifyPassword:", error.message);
+    throw error;
+  }
+};
+
+exports.getAllOrdersByUserId = async (userId) => {
+  try {
+    const query = "SELECT * FROM orders WHERE user_id = ?";
+    const [orders] = await pool.query(query, [userId]);
+    return orders;
+  } catch (error) {
+    console.error("Error in getAllOrdersByUserId:", error);
     throw error;
   }
 };

@@ -2,9 +2,9 @@
 
 import React from "react";
 import Link from "next/link";
-import { useRouter } from 'next/navigation';
-import Cookies from 'js-cookie';
-import useGetProfile from '../hooks/user/useGetProfile';
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+import useGetProfile from "../hooks/user/useGetProfile";
 import {
   Navbar,
   NavbarBrand,
@@ -21,23 +21,27 @@ export default function Navbar1() {
   const router = useRouter();
   const { userProfile, isLoading, isError } = useGetProfile();
   const handleLogout = () => {
-    Cookies.remove('userId');
-    Cookies.remove('accessToken');
-    router.push('/signin'); 
+    Cookies.remove("userId");
+    Cookies.remove("accessToken");
+    router.push("/signin");
   };
   return (
     <Navbar isBordered>
       <NavbarBrand>
-        <p className="font-bold text-lg">股漲</p>
+        <p className="font-bold text-lg cursor-pointer">
+          <Link color="foreground" href="/">
+            股漲
+          </Link>
+        </p>
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
         <NavbarItem>
-          <Link color="foreground" href="#">
+          <Link color="foreground" href="/ordersearch">
             委託查詢
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link color="foreground" href="#">
+          <Link color="foreground" href="/transactionrecord">
             交易紀錄
           </Link>
         </NavbarItem>
@@ -63,14 +67,14 @@ export default function Navbar1() {
               //   color="secondary"
               name="Jason Hughes"
               size="md"
-              src="/photo.jpg"
+              src="/warren.jpg"
             />
           </DropdownTrigger>
           <DropdownMenu aria-label="Profile Actions" variant="flat">
             <DropdownItem key="myaccount">帳戶概覽</DropdownItem>
-              <DropdownItem key="logout" color="danger" onClick={handleLogout}>
-                登出
-              </DropdownItem>
+            <DropdownItem key="logout" color="danger" onClick={handleLogout}>
+              登出
+            </DropdownItem>
           </DropdownMenu>
         </Dropdown>
       </NavbarContent>

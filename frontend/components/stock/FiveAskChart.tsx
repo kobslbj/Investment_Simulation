@@ -58,7 +58,7 @@ const FiveAskChart: React.FC<FiveAskChartProps> = ({ asks }) => {
   };
 
   return (
-    <div className="w-[20rem]">
+    <div className="w-[25rem]">
       <Bar options={options} data={data} />
     </div>
   );

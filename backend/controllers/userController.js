@@ -145,3 +145,14 @@ exports.getUserProfile = async (req, res) => {
     return res.status(500).json({ error: "Server Error." });
   }
 };
+
+
+exports.getAllOrders = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const orders = await userModel.getAllOrdersByUserId(userId);
+    res.json(orders);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
