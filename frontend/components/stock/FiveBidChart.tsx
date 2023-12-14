@@ -26,34 +26,34 @@ interface FiveBidChartProps {
 }
 
 export const options = {
-    indexAxis: 'y',
-    elements: {
-      bar: {
-        borderWidth: 2,
-      },
+  indexAxis: 'y' as const, // 使用 'as const' 断言
+  elements: {
+    bar: {
+      borderWidth: 2,
     },
-    responsive: true,
-    scales: {
-      x: {
-        reverse: true, // 將 X 軸反向
-        beginAtZero: true,
-      },
-      y: {
-        beginAtZero: true,
-        position: 'right', // 將 Y 軸放在右側
-      }
+  },
+  responsive: true,
+  scales: {
+    x: {
+      reverse: true,
+      beginAtZero: true,
     },
-    plugins: {
-      legend: {
-        display: false,
-      },
-      title: {
-        display: true,
-        text: 'Stock Bid ',
-      },
+    y: {
+      beginAtZero: true,
+      position: 'right' as const, // 使用 'as const' 断言
+    }
+  },
+  plugins: {
+    legend: {
+      display: false,
     },
-  };
-  
+    title: {
+      display: true,
+      text: 'Stock Bid ',
+    },
+  },
+};
+
 
 
 

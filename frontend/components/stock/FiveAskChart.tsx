@@ -26,23 +26,34 @@ interface FiveAskChartProps {
 }
 
 export const options = {
-  indexAxis: "y",
+  indexAxis: 'y' as const, // 将 'y' 更改为常量
   elements: {
     bar: {
       borderWidth: 2,
     },
   },
   responsive: true,
+  scales: {
+    x: {
+      reverse: true, // 将 X 轴反向
+      beginAtZero: true,
+    },
+    y: {
+      beginAtZero: true,
+      position: 'right' as const, // 将 'right' 更改为常量
+    }
+  },
   plugins: {
     legend: {
       display: false,
     },
     title: {
       display: true,
-      text: "Stock Ask",
+      text: 'Stock Bid ',
     },
   },
 };
+
 
 const FiveAskChart: React.FC<FiveAskChartProps> = ({ asks }) => {
   const data = {
