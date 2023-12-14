@@ -9,6 +9,7 @@ const userRoutes = require("./routes/userRoute");
 const tradeRoute = require("./routes/tradeRoute");
 const stockRoutes = require('./routes/stockRoute'); 
 const transactionRoutes =  require('./routes/transactionRoute'); 
+const stockholdingRoute = require('./routes/stockholdingRoute');
 const robotScheduler = require("./services/robotScheduler");
 const  {initializeRobotHoldings}  = require('./services/initializeHoldings');
 require("./services/matchListener");
@@ -25,6 +26,7 @@ app.use("/api", userRoutes);
 app.use("/api", tradeRoute);
 app.use('/api', stockRoutes);
 app.use('/api', transactionRoutes);
+app.use('/api', stockholdingRoute);
 io.on('connection', (socket) => {
   console.log('a user connected');
   socket.emit('welcome', 'Welcome to the investment simulation platform!');
