@@ -26,19 +26,31 @@ export default function Home() {
     error: stockError,
     isLoading: stockLoading,
   } = useGetStock(stockId);
-
+  type OrderBookEntry = {
+    order_price: number;
+    price: number;
+    quantity: number;
+  };
+  
   console.log("123123123" + selectedStock);
   const [orderBook, setOrderBook] = useState({
-    bids: [],
-    asks: [],
+    bids: [] as OrderBookEntry[],
+    asks: [] as OrderBookEntry[],
     totalBidQuantity: 0,
     totalAskQuantity: 0,
   });
+  
   const updateFiveLevelOrderBook = (
-    data: SetStateAction<{ bids: never[]; asks: never[] }>
+    data: {
+      bids: OrderBookEntry[];
+      asks: OrderBookEntry[];
+      totalBidQuantity: number;
+      totalAskQuantity: number;
+    }
   ) => {
     setOrderBook(data);
   };
+  
 
   useEffect(() => {
     const socket = io("http://localhost:3000");
