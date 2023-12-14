@@ -26,13 +26,14 @@ export default function OrderSearchpage() {
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
-  const stockNames = {
+  const stockNames: Record<number, string> = {
     1: "2303聯電",
     2: "2618長榮航",
     3: "3231緯創",
     4: "2892第一金",
     5: "2330台積電",
   };
+  
 
   const formatOrderType = (type: string) => {
     switch (type) {
