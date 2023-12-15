@@ -4,7 +4,7 @@ import { useState, useEffect, SetStateAction } from "react";
 import io, { Socket } from "socket.io-client";
 import useGetStock from "../hooks/stock/useGetStock";
 let socket: Socket<DefaultEventsMap, DefaultEventsMap>;
-
+require('dotenv').config();
 import Navbar1 from "@/components/navbar";
 import OrderPlacer from "@/components/orderplacer";
 import FiveAskChart from "@/components/stock/FiveAskChart";
@@ -53,7 +53,7 @@ export default function Home() {
   
 
   useEffect(() => {
-    const socket = io("https://52.195.76.225");
+    const socket = io("https://stylish.solutions");
     socket.on("orderBookUpdate", (data) => {
       if (data.stockId === stockNameToId[selectedStock]) {
         console.log("123", data);

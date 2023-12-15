@@ -35,12 +35,12 @@ io.on('connection', (socket) => {
   });
 });
 
-// 监听 HTTP 服务器而非 Express 应用
+
 server.listen(port, async () => {
   console.log("Investment simulation platform is running on port:", port);
   await initializeRobotHoldings();
-  robotScheduler.scheduleRobotTrades(); // 启动机器人交易
+  robotScheduler.scheduleRobotTrades();
 });
 
-// 仅导出 app 和 server，因为 io 现在可以通过 socket.js 访问
+
 module.exports = { app, server };
