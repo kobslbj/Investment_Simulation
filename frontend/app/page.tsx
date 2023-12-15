@@ -53,7 +53,7 @@ export default function Home() {
   
 
   useEffect(() => {
-    const socket = io("http://localhost:3000");
+    const socket = io("https://52.195.76.225");
     socket.on("orderBookUpdate", (data) => {
       if (data.stockId === stockNameToId[selectedStock]) {
         console.log("123", data);
